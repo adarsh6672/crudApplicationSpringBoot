@@ -13,3 +13,12 @@ spring:
         format_sql: true
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
+  logging:
+    level:
+      root: ERROR
+      org.springframework.web: ERROR
+      com.yourpackage: DEBUG
+      org.hibernate: ERROR
+    pattern:
+      console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
