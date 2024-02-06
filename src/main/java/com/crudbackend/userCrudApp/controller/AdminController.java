@@ -1,5 +1,6 @@
 package com.crudbackend.userCrudApp.controller;
 
+import com.crudbackend.userCrudApp.DTO.UserUpdateDTO;
 import com.crudbackend.userCrudApp.model.User;
 import com.crudbackend.userCrudApp.repository.UserRepository;
 import com.crudbackend.userCrudApp.service.AdminService;
@@ -54,6 +55,17 @@ public class AdminController {
         }
 
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/admin/updateuser")
+    public ResponseEntity<?> updateUser(@RequestBody UserUpdateDTO data){
+        User updatedUser= adminService.updateUser(data);
+        if(updatedUser==null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedUser);
+    }
+
 
 
 }

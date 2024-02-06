@@ -1,5 +1,6 @@
 package com.crudbackend.userCrudApp.service;
 
+import com.crudbackend.userCrudApp.DTO.UserUpdateDTO;
 import com.crudbackend.userCrudApp.model.AuthenticationResponse;
 import com.crudbackend.userCrudApp.model.User;
 import com.crudbackend.userCrudApp.repository.UserRepository;
@@ -45,4 +46,17 @@ public class AdminService {
 
         return true;
     }
+
+    public User updateUser(UserUpdateDTO userUpdateDTO){
+        User user = userRepository.findById(userUpdateDTO.getId()).orElseThrow();
+
+        user.setUsername(userUpdateDTO.getUsername());
+        user.setFirstName(userUpdateDTO.getFirstName());
+        user.setLastName(userUpdateDTO.getLastName());
+        user.setRole(userUpdateDTO.getRole());
+
+        return  userRepository.save(user);
+    }
+
+
 }
