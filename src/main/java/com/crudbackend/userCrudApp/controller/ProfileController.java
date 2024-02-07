@@ -39,7 +39,7 @@ public class ProfileController {
         this.imageRespository = imageRespository;
     }
 
-    private static final String UPLOAD_PATH="/home/adarsh/BROTOTYPE/CRUD_APP_BACKEND/userCrudApp/src/main/resources/static/profilePic";
+    private static final String UPLOAD_PATH="/home/adarsh/BROTOTYPE/CRUD_APP_BACKEND/userCrudApp/src/main/resources/static/profilePic/";
 
     @GetMapping("/profile")
     public ResponseEntity<?> demo(@RequestHeader("Authorization") String headerToken){
@@ -61,6 +61,14 @@ public class ProfileController {
         User user=userRepository.findByUsername(username).orElseThrow();
 
         try{
+            Image oldimage=imageRespository.findByUser(user);
+            if(oldimage!=null){
+                Files.delete(Path.of(oldimage.getImagePath()));
+                oldimage.setImagePath(UPLOAD_PATH+fileName);
+                file.transferTo(new File(UPLOAD_PATH+fileName));
+                imageRespository.save(oldimage);
+                return ResponseEntity.ok("file uploaded by deleting old");
+            }
             file.transferTo(new File(UPLOAD_PATH+fileName));
             Image image= new Image();
             image.setUser(user);
@@ -80,12 +88,19 @@ public class ProfileController {
         String token = headerToken.substring(7);
         String username = jwtService.extractUsername(token);
         User user=userRepository.findByUsername(username).orElseThrow();
-        Image image=imageRespository.findByUser(user).orElseThrow();
-        ClassPathResource imageFile = new ClassPathResource(image.getImagePath());
+        try {
+            Image image=imageRespository.findByUser(user);
+            RandomAccessFile f = new RandomAccessFile(image.getImagePath(), "r");
+            byte[] b = new byte[(int)f.length()];
+            f.readFully(b);
+            final HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_PNG);
+            return new ResponseEntity<byte[]>(b, headers, HttpStatus.CREATED);
+        }catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
 
-        byte[] imageBytes = StreamUtils.copyToByteArray(imageFile.getInputStream());
 
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageBytes);
 
     }
 

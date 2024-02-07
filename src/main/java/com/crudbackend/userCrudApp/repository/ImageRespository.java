@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface ImageRespository extends JpaRepository<Image, Integer > {
 
-    Optional<Image> findByUser(User user);
+    Image findByUser(User user);
 }
